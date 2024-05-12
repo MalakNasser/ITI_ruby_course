@@ -40,18 +40,15 @@ class CBABank < Bank
                 if !users.include?(transaction.user)
                     Logger.log_error(message + "failed with message #{transaction.user.name} not exist in the bank!!")
                     raise "#{transaction.user.name} not exist in the bank!!"
-                else
-                    transaction.user.balance += transaction.value
-                    if (transaction.user.balance) < 0 
-                        Logger.log_error(message + "failed with message Not enough balance")
-                        raise "Not enough balance"
-                    elsif (transaction.user.balance) == 0 
-                        Logger.log_warning("#{transaction.user.name} has 0 balance")
-                    else
-                        Logger.log_info(message + "succeeded")
-                    end
-                    callback_block.call("succeeded", transaction)
+                elsif (transaction.user.balance + transaction.value) < 0 
+                    Logger.log_error(message + "failed with message Not enough balance")
+                    raise "Not enough balance"
+                elsif (transaction.user.balance + transaction.value) == 0 
+                    Logger.log_warning("#{transaction.user.name} has 0 balance")
                 end
+                transaction.user.balance += transaction.value
+                Logger.log_info(message + "succeeded")
+                callback_block.call("succeeded", transaction)
             rescue => e 
                 callback_block.call("failed", transaction, e.message)
             end
