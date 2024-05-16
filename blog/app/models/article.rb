@@ -12,11 +12,5 @@ class Article < ApplicationRecord
     def report
       increment!(:reports_count)
     end
-
-    def archive_if_reports_exceeded
-      if reports_count >= 3 && !archived?
-        update(archived: true)
-      end
-    end
   end
   
